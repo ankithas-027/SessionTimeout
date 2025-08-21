@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Redirect_URL__c</fullName>
+    <description>The URL to redirect to when action is set to &apos;redirect&apos;.</description>
+    <inlineHelpText>Enter a complete absolute URL including the protocol (https:// or http://). Example: &apos;https://yourdomain.com/custom-logout&apos;. For best results, avoid using relative URLs (like &apos;/home&apos;).</inlineHelpText>
+    <label>Redirect URL</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Url</type>
+</CustomField>

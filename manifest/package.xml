@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+<types>
+  <members>SessionTimeoutConfigController</members>
+  <members>SessionTimeoutConfigControllerTest</members>
+  <members>SessionTimeoutConfigDTO</members>
+  <name>ApexClass</name>
+</types>
+<types>
+  <members>SessionTimeoutSettings__c.Continue_Button_Color__c</members>
+  <members>SessionTimeoutSettings__c.Continue_Button_Label__c</members>
+  <members>SessionTimeoutSettings__c.Countdown_Color__c</members>
+  <members>SessionTimeoutSettings__c.Inactivity_Timeout__c</members>
+  <members>SessionTimeoutSettings__c.Is_Active__c</members>
+  <members>SessionTimeoutSettings__c.Logo_Url__c</members>
+  <members>SessionTimeoutSettings__c.Logout_Button_Color__c</members>
+  <members>SessionTimeoutSettings__c.Logout_Button_Label__c</members>
+  <members>SessionTimeoutSettings__c.Logout_Countdown__c</members>
+  <members>SessionTimeoutSettings__c.Modal_Body_Color__c</members>
+  <members>SessionTimeoutSettings__c.Modal_Border_Radius__c</members>
+  <members>SessionTimeoutSettings__c.Modal_Footer_Color__c</members>
+  <members>SessionTimeoutSettings__c.Modal_Header_Color__c</members>
+  <members>SessionTimeoutSettings__c.Modal_Message__c</members>
+  <members>SessionTimeoutSettings__c.Modal_Title__c</members>
+  <members>SessionTimeoutSettings__c.Modal_Width__c</members>
+  <members>SessionTimeoutSettings__c.Post_Timeout_Action__c</members>
+  <members>SessionTimeoutSettings__c.Priority__c</members>
+  <members>SessionTimeoutSettings__c.Redirect_URL__c</members>
+  <members>SessionTimeoutSettings__c.Show_Countdown__c</members>
+        <members>Session_Timeout_Config__mdt.Continue_Button_Color__c</members>
+  <members>Session_Timeout_Config__mdt.Continue_Button_Label__c</members>
+  <members>Session_Timeout_Config__mdt.Countdown_Color__c</members>
+  <members>Session_Timeout_Config__mdt.Inactivity_Timeout__c</members>
+  <members>Session_Timeout_Config__mdt.Is_Active__c</members>
+  <members>Session_Timeout_Config__mdt.Logo_Url__c</members>
+  <members>Session_Timeout_Config__mdt.Logout_Button_Color__c</members>
+  <members>Session_Timeout_Config__mdt.Logout_Button_Label__c</members>
+  <members>Session_Timeout_Config__mdt.Logout_Countdown__c</members>
+  <members>Session_Timeout_Config__mdt.Modal_Body_Color__c</members>
+  <members>Session_Timeout_Config__mdt.Modal_Border_Radius__c</members>
+  <members>Session_Timeout_Config__mdt.Modal_Footer_Color__c</members>
+  <members>Session_Timeout_Config__mdt.Modal_Header_Color__c</members>
+  <members>Session_Timeout_Config__mdt.Modal_Message__c</members>
+  <members>Session_Timeout_Config__mdt.Modal_Title__c</members>
+  <members>Session_Timeout_Config__mdt.Modal_Width__c</members>
+  <members>Session_Timeout_Config__mdt.Post_Timeout_Action__c</members>
+  <members>Session_Timeout_Config__mdt.Priority__c</members>
+  <members>Session_Timeout_Config__mdt.Redirect_URL__c</members>
+  <members>Session_Timeout_Config__mdt.Show_Countdown__c</members>
+  <name>CustomField</name>
+</types>
+<types>
+  <members>Session_Timeout_Config.Default_Settings</members>
+  <name>CustomMetadata</name>
+</types>
+<types>
+  <members>SessionTimeoutSettings__c</members>
+  <members>Session_Timeout_Config__mdt</members>
+  <name>CustomObject</name>
+</types>
+<types>
+  <members>Session_Timeout_Config__mdt-Session Timeout Config Layout</members>
+  <name>Layout</name>
+</types>
+<types>
+  <members>sessionTimer</members>
+  <name>LightningComponentBundle</name>
+</types>
+<types>
+  <members>Session_Timer_Access</members>
+  <name>PermissionSet</name>
+</types>
+<types>
+  <members>LogoUrl</members>
+  <name>StaticResource</name>
+</types>
+<version>62.0</version>
+</Package>

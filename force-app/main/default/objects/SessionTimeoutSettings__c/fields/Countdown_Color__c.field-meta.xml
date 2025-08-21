@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Countdown_Color__c</fullName>
+    <defaultValue>&apos;#EA001E&apos;</defaultValue>
+    <description>Defines the text color for the countdown timer.</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Enter a valid CSS (e.g., hex #FF0000, red, rgb(255,0,0)) color for the countdown timer text (e.g., red for warning).</inlineHelpText>
+    <label>Countdown Color</label>
+    <length>50</length>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

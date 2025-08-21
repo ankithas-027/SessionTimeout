@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Modal_Width__c</fullName>
+    <defaultValue>&apos;500px&apos;</defaultValue>
+    <description>Width of the modal window.</description>
+    <externalId>false</externalId>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <inlineHelpText>Enter a valid CSS width (e.g., 400px, 50%) to set the modal width.</inlineHelpText>
+    <label>Modal Width</label>
+    <length>50</length>
+    <required>false</required>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

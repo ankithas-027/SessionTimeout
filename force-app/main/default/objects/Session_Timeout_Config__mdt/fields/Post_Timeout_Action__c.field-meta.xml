@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Post_Timeout_Action__c</fullName>
+    <description>Determines what happens when session timeout occurs.</description>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <inlineHelpText>Select &apos;logout&apos; for standard logout or &apos;redirect&apos; to direct users to a specific URL.
+ 
+Important: If &apos;redirect&apos; is selected, you must provide a valid URL in the &apos;Redirect URL&apos; field. Otherwise, the session timeout pop-up may not function as expected.</inlineHelpText>
+    <label>Post-Timeout Action</label>
+    <required>false</required>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>logout</fullName>
+                <default>true</default>
+                <label>Logout (Default)</label>
+            </value>
+            <value>
+                <fullName>redirect</fullName>
+                <default>false</default>
+                <label>Redirect</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

@@ -1,0 +1,160 @@
+:host {
+    --modal-width: 500px;
+    --modal-border-radius: 8px;
+    --countdown-color: #EA001E;
+    --header-bg-color: #FFFFFF;
+    --body-bg-color: #FFFFFF;
+    --footer-bg-color: #F3F2F2;
+    --continue-button-border-color: #0176d3;
+    --logout-button-border-color: #c23934;
+}
+
+.session-timer-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--backdrop-color, rgba(0, 0, 0, 0.5));
+    z-index: 1;
+}
+
+.session-timer-modal {
+    position: relative;
+    width: var(--modal-width, 90%);
+    max-width: 90%;
+    background-color: var(--modal-bg-color, white);
+    border-radius: var(--modal-border-radius, 8px);
+    box-shadow: var(--modal-box-shadow, 0 4px 6px rgba(0, 0, 0, 0.1));
+    z-index: 2;
+    animation: fadeIn 0.3s ease-out;
+    font-family: var(--modal-font-family, inherit);
+    overflow: hidden;
+    pointer-events: auto;
+}
+
+
+.modal-header {
+    padding: var(--header-padding, 1rem 1.5rem);
+    border-bottom: var(--header-border, 1px solid #dddbda);
+    background-color: var(--header-bg-color, transparent);
+}
+
+.modal-header h2 {
+    font-size: var(--heading-font-size, 1.25rem);
+    color: var(--heading-color, #080707);
+    margin: 0;
+    font-weight: var(--heading-font-weight, normal);
+}
+
+.modal-header {
+    padding: var(--header-padding, 1rem 1.5rem);
+    border-bottom: var(--header-border, 1px solid #dddbda);
+    background-color: var(--header-bg-color, transparent);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.header-logo {
+    flex: 0 0 auto;
+}
+
+.header-logo img {
+    max-height: 40px;
+    max-width: 120px;
+    height: auto;
+    object-fit: contain;
+    display: block;
+}
+
+.modal-header h2 {
+    flex: 1;
+    font-size: var(--heading-font-size, 1.25rem);
+    color: var(--heading-color, #080707);
+    margin: 0;
+    font-weight: var(--heading-font-weight, normal);
+}
+
+
+.modal-body {
+    padding: var(--body-padding, 1.5rem);
+    background-color: var(--body-bg-color, transparent);
+}
+
+.modal-body p {
+    margin: var(--text-margin, 0 0 1rem 0);
+    color: var(--text-color, #3e3e3c);
+    font-size: var(--text-font-size, 1rem);
+}
+
+.countdown {
+    font-weight: var(--countdown-font-weight, bold);
+    color: var(--countdown-color, #ea001e);
+}
+
+.modal-footer {
+    padding: var(--footer-padding, 1rem 1.5rem);
+    border-top: var(--footer-border, 1px solid #dddbda);
+    display: flex;
+    justify-content: var(--footer-justify, flex-end);
+    gap: var(--button-gap, 0.75rem);
+    background-color: var(--footer-bg-color, transparent);
+    pointer-events: auto;
+    position: relative;
+}
+
+.continue-button {
+     background-color: var(--continue-button-bg-color, #0176d3);
+    border-color: var(--continue-button-border-color, #0176d3);
+    color: var(--continue-button-text-color, white);
+}
+
+
+.logout-button {
+     background-color: var(--logout-button-bg-color, #c23934);
+    border-color: var(--logout-button-border-color, #c23934);
+    color: var(--logout-button-text-color, white);
+}
+
+
+.slds-button {
+    padding: 0.2rem 0.7rem;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    font-weight: 500;
+    text-align: center;
+    vertical-align: middle;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.continue-button:focus,
+.logout-button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(21, 156, 228, 0.4);
+}
+
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

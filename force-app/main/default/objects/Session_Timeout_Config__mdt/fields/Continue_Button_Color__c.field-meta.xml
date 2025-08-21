@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Continue_Button_Color__c</fullName>
+    <defaultValue>&apos;&apos;</defaultValue>
+    <description>Defines the background color of the Continue button.</description>
+    <externalId>false</externalId>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <inlineHelpText>Enter a valid CSS color (e.g., hex #FF0000, red, rgb(255,0,0)) for the Continue button background</inlineHelpText>
+    <label>Continue Button Color</label>
+    <length>50</length>
+    <required>false</required>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

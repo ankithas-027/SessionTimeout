@@ -1,0 +1,65 @@
+<!--
+  @description       :
+  @author            : Priyanka K M
+  @group             :
+  @last modified on  : 08-13-2025
+  @last modified by  : Priyanka K M
+-->
+
+
+<template>
+    <div class="session-timer-container" if:true={showTimeoutModal}>
+        <div
+            class="session-timer-modal"
+            role="dialog"
+            aria-labelledby="timeout-heading"
+            aria-describedby="timeout-description"
+            aria-modal="true"
+            tabindex="-1"
+            onclick={handleModalClick}
+            onkeydown={handleKeydown}
+        >
+
+               <!-- MOVED LOGO INTO HEADER -->
+            <div class="modal-header">
+                <template if:true={logoUrl}>
+                    <div class="header-logo">
+                        <img src={logoImage} alt="Company Logo" onerror={handleImageError} />
+                    </div>
+                </template>
+                <h2 id="timeout-heading">{modalTitle}</h2>
+            </div>
+
+
+            <!-- Modal Body -->
+            <div class="modal-body" id="timeout-description">
+                <p>{displayMessage}</p>
+                <p>Would you like to continue your session?</p>
+                <template if:true={showCountdown}>
+                    <p class="countdown">
+                        Logging out in {countdown} seconds...
+                    </p>
+                </template>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+               <button
+                    onclick={handleContinueClick}
+                    class="slds-button continue-button"
+                >
+                    {continueButtonLabel}
+                </button>
+                <button
+                    onclick={handleLogoutClick}
+                    class="slds-button logout-button"
+                >
+                {logoutButtonLabel}
+                </button>
+            </div>
+        </div>
+
+        <!-- Backdrop -->
+        <div class="modal-backdrop"></div>
+    </div>
+</template>

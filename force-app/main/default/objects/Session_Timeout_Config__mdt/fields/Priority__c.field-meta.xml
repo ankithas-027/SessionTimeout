@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Priority__c</fullName>
+    <defaultValue>1</defaultValue>
+    <description>Higher values take precedence. Default=01, Overrides=100, Fallbacks=0</description>
+    <externalId>false</externalId>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <inlineHelpText>Set to 100 for forced overrides, 01 for standard defaults, or 0 for last-resort fallbacks</inlineHelpText>
+    <label>Priority</label>
+    <precision>3</precision>
+    <required>false</required>
+    <scale>0</scale>
+    <type>Number</type>
+    <unique>true</unique>
+</CustomField>

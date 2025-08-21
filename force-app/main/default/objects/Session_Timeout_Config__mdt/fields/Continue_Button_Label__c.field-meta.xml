@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Continue_Button_Label__c</fullName>
+    <defaultValue>&apos;Continue Session&apos;</defaultValue>
+    <description>Enter text to be displayed on the Continue button.</description>
+    <externalId>false</externalId>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <inlineHelpText>Enter the label users will see on the Continue button (e.g., &quot;Proceed&quot;, &quot;Next&quot;).</inlineHelpText>
+    <label>Continue Button Label</label>
+    <length>255</length>
+    <required>false</required>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

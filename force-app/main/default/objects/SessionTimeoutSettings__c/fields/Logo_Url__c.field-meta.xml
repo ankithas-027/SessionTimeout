@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Logo_Url__c</fullName>
+    <description>URL for the logo image to display in the timeout modal</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Overrides the default logo from Custom Metadata. Supports:
+• Web URLs (https://)
+• Static Resources (/resource/Name)
+• Relative paths for Experience Cloud (/img/logo.png)
+Note: URL must be accessible to all users. For secure external URLs, ensure CORS is configured.</inlineHelpText>
+    <label>Logo Url</label>
+    <length>255</length>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

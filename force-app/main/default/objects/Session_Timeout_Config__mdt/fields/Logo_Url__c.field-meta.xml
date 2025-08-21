@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Logo_Url__c</fullName>
+    <description>URL for the logo image to display in the timeout modal</description>
+    <externalId>false</externalId>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <inlineHelpText>Enter a full URL (https://...), Salesforce static resource path (/resource/ResourceName), or document link.
+Examples:
+• External URL: https://yourdomain.com/images/logo.png
+• Static Resource: /resource/CompanyLogo
+• Experience Cloud: /img/communityLogo.png
+Image will be displayed at max-height: 60px in the modal.</inlineHelpText>
+    <label>Logo Url</label>
+    <length>255</length>
+    <required>false</required>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

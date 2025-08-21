@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Require_Action_Fields</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+      ISPICKVAL(Post_Timeout_Action__c, &apos;redirect&apos; ),            ISBLANK(Redirect_URL__c)
+  )</errorConditionFormula>
+    <errorMessage>Required field missing: 
+- Set Redirect URL when Action=&apos;redirect&apos;</errorMessage>
+</ValidationRule>

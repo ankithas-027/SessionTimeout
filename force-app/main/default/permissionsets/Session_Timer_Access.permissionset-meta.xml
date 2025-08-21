@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <classAccesses>
+        <apexClass>SessionTimeoutConfigController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>SessionTimeoutConfigDTO</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <customMetadataTypeAccesses>
+        <enabled>true</enabled>
+        <name>Session_Timeout_Config__mdt</name>
+    </customMetadataTypeAccesses>
+    <customSettingAccesses>
+        <enabled>true</enabled>
+        <name>SessionTimeoutSettings__c</name>
+    </customSettingAccesses>
+    <description>Grants access to Apex class, Custom Metadata Type, and Custom Settings required for Session Timer model.</description>
+    <hasActivationRequired>false</hasActivationRequired>
+    <label>Session Timer Access</label>
+</PermissionSet>
