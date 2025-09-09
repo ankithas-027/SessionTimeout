@@ -46,29 +46,29 @@ public with sharing class SessionTimeoutConfigController {
         return new SessionTimeoutConfigDTO(testConfig.config);
     }
 
-
     private static SessionTimeoutConfigDTO getLiveConfiguration() {
         try {
-                SessionTimeoutConfigDTO customSettingConfig = getCustomSettingConfig();
-                if (customSettingConfig != null && customSettingConfig.timeoutSettings != null
-                    && customSettingConfig.timeoutSettings.inactivityTimeout != null) {
-                    return customSettingConfig;
-                }
-
-
-                return getMetadataConfig();
-            } catch (Exception e) {
-                throw createHandledException('Failed to retrieve configuration: ' + e.getMessage());
+            // 1) Try Hierarchy Custom Setting (user -> profile -> org)
+            SessionTimeoutConfigDTO cs = getCustomSettingConfig();
+            if (cs != null && cs.timeoutSettings != null
+                && cs.timeoutSettings.inactivityTimeout != null) {
+                return cs;
             }
+
+            // 2) Fallback to Custom Metadata
+            return getMetadataConfig();
+
+        } catch (Exception e) {
+            throw createHandledException('Failed to retrieve configuration: ' + e.getMessage());
         }
+    }
 
     private static SessionTimeoutConfigDTO getCustomSettingConfig() {
         SessionTimeoutSettings__c config = SessionTimeoutSettings__c.getInstance(UserInfo.getUserId());
-        config = config != null ? config : SessionTimeoutSettings__c.getInstance(UserInfo.getProfileId());
-        config = config != null ? config : SessionTimeoutSettings__c.getOrgDefaults();
-        return config != null ? createValidatedConfig(config) : null;
+        config = (config != null) ? config : SessionTimeoutSettings__c.getInstance(UserInfo.getProfileId());
+        config = (config != null) ? config : SessionTimeoutSettings__c.getOrgDefaults();
+        return (config != null) ? createValidatedConfig(config) : null;
     }
-
 
     private static SessionTimeoutConfigDTO createValidatedConfig(SessionTimeoutSettings__c config) {
         validateRedirect(config.Post_Timeout_Action__c, config.Redirect_URL__c);
@@ -87,10 +87,9 @@ public with sharing class SessionTimeoutConfigController {
             SELECT Inactivity_Timeout__c, Logout_Countdown__c, Show_Countdown__c,
                    Modal_Title__c, Modal_Message__c, Continue_Button_Label__c,
                    Logout_Button_Label__c, Modal_Header_Color__c, Modal_Body_Color__c,
-                   Modal_Footer_Color__c,
-                   Priority__c, Continue_Button_Color__c, Logout_Button_Color__c,
-                   Is_Active__c, Countdown_Color__c, Modal_Width__c,
-                   Modal_Border_Radius__c, Post_Timeout_Action__c, Redirect_URL__c, Logo_URL__c
+                   Modal_Footer_Color__c, Priority__c, Continue_Button_Color__c,
+                   Logout_Button_Color__c, Is_Active__c, Countdown_Color__c, Modal_Width__c,
+                   Modal_Border_Radius__c, Post_Timeout_Action__c, Redirect_URL__c, Logo_URL__c, Label
             FROM Session_Timeout_Config__mdt
             WHERE Is_Active__c = true
             WITH USER_MODE
@@ -112,19 +111,28 @@ public with sharing class SessionTimeoutConfigController {
             WITH USER_MODE
         ]) {
             if (priorityMap.containsKey(config.Priority__c)) {
-                throw createHandledException('Duplicate priority ' + config.Priority__c +
-                    ' in ' + priorityMap.get(config.Priority__c) + ' and ' + config.Label);
+                throw createHandledException(
+                    'Duplicate priority ' + config.Priority__c +
+                    ' in ' + priorityMap.get(config.Priority__c) + ' and ' + config.Label
+                );
             }
             priorityMap.put(config.Priority__c, config.Label);
         }
     }
 
-    private static void validateRedirect(String action, String url) {
-        if (action == 'redirect' && String.isBlank(url)) {
-            throw createHandledException('Redirect URL required for redirect action');
+   
+        private static void validateRedirect(String action, String url) {
+        String normalizedAction = (action == null) ? 'logout' : action.trim().toLowerCase();
+        if (normalizedAction == 'redirect') {
+            if (String.isBlank(url)) {
+                throw createHandledException('Redirect URL required for redirect action');
+            }
+            if (SessionTimeoutConfigDTO.validateRedirectUrl(url, 'redirect') == null) {
+                throw createHandledException('Invalid redirect URL: ' + url);
+            }
         }
     }
-
+    
     private static AuraHandledException createHandledException(String message) {
         AuraHandledException ex = new AuraHandledException(message);
         ex.setMessage(message);

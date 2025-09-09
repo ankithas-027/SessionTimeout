@@ -2,7 +2,7 @@
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Show_Countdown__c</fullName>
     <defaultValue>false</defaultValue>
-    <description>Determines whether to display the countdown timer in the modal.</description>
+    <description>Whether to display the countdown timer in the modal.</description>
     <fieldManageability>DeveloperControlled</fieldManageability>
     <inlineHelpText>Select this checkbox to show the countdown timer in the modal during inactivity.</inlineHelpText>
     <label>Show Countdown</label>

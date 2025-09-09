@@ -4,7 +4,7 @@
     <description>Determines what happens when a session timeout occurs.</description>
     <externalId>false</externalId>
     <inlineHelpText>Select &apos;logout&apos; for standard logout or &apos;redirect&apos; to direct users to a specific URL.
-
+ 
 Important: If &apos;redirect&apos; is selected, you must provide a valid URL in the &apos;Redirect URL&apos; field. Otherwise, the session timeout pop-up may not function as expected.</inlineHelpText>
     <label>Post Timeout Action</label>
     <length>255</length>

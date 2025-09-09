@@ -1,12 +1,22 @@
 {
   "packageDirectories": [
     {
+      "versionName": "ver 0.1",
+      "versionNumber": "0.2.0.NEXT",
       "path": "force-app",
-      "default": true
+      "default": true,
+      "package": "SmartSession",
+      "ancestorId": "04tKa000001SW8wIAG",
+      "versionDescription": "SmartSession Manager is a custom LWC that tracks user inactivity and shows configurable session timeout warnings. It works in Salesforce Lightning Apps and Experience Cloud Sites, including guest users."
     }
   ],
   "name": "Session Timeout",
-  "namespace": "",
+  "namespace": "FCLabs",
   "sfdcLoginUrl": "https://login.salesforce.com",
-  "sourceApiVersion": "64.0"
+  "sourceApiVersion": "64.0",
+  "packageAliases": {
+    "SmartSession": "0HoKa000000kBFIKA2",
+    "SmartSession@0.1.0-1": "04tKa000001SW8wIAG",
+    "SmartSession@0.2.0-2": "04tKa000001SYHYIA4"
+  }
 }

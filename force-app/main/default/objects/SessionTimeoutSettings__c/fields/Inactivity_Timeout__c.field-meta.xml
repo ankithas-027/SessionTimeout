@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Inactivity_Timeout__c</fullName>
-    <defaultValue>10000</defaultValue>
+    <defaultValue>60</defaultValue>
+    <description>Idle time before showing the timeout modal (in seconds).</description>
     <externalId>false</externalId>
+    <inlineHelpText>Enter the number of seconds after which the modal should appear due to inactivity.</inlineHelpText>
     <label>Inactivity Timeout</label>
     <precision>18</precision>
     <required>false</required>

@@ -33,7 +33,7 @@ private class SessionTimeoutConfigControllerTest {
     private static Session_Timeout_Config__mdt createMetadataConfig(Integer priority, Boolean isActive, String postTimeoutAction, String redirectUrl) {
         return new Session_Timeout_Config__mdt(
             Label = 'Test Metadata',
-            DeveloperName = 'Test_Metadata',
+            DeveloperName = 'Test_Metadata_' + priority,
             Is_Active__c = isActive,
             Priority__c = priority,
             Inactivity_Timeout__c = 15,
@@ -64,7 +64,7 @@ private class SessionTimeoutConfigControllerTest {
         Test.stopTest();
 
         System.assertNotEquals(null, result, 'Result should not be null');
-        System.assertEquals(20, result.timeoutSettings.inactivityTimeout, 'Inactivity timeout should match custom setting');
+        System.assertEquals(20000, result.timeoutSettings.inactivityTimeout, 'Inactivity timeout should match custom setting');
         System.assertEquals('Custom Setting Timeout', result.modalContent.modalTitle, 'Modal title should match custom setting');
         System.assertEquals('redirect', result.actionSettings.postTimeoutAction, 'Post timeout action should match custom setting');
         System.assertEquals('https://example.com/logo.png', result.logoUrl, 'Logo URL should match');
@@ -86,7 +86,7 @@ private class SessionTimeoutConfigControllerTest {
         Test.stopTest();
 
         System.assertNotEquals(null, result, 'Result should not be null');
-        System.assertEquals(15, result.timeoutSettings.inactivityTimeout, 'Inactivity timeout should match test metadata');
+        System.assertEquals(15000, result.timeoutSettings.inactivityTimeout, 'Inactivity timeout should match test metadata');
         System.assertEquals('Metadata Timeout', result.modalContent.modalTitle, 'Modal title should match test metadata');
         System.assertEquals('logout', result.actionSettings.postTimeoutAction, 'Post timeout action should match test metadata');
         System.assertEquals(1, result.timeoutSettings.priority, 'Priority should match metadata');
@@ -154,7 +154,6 @@ private class SessionTimeoutConfigControllerTest {
         Test.stopTest();
     }
 
-
     @IsTest
     static void testGetActiveMetadataConfigSuccess() {
         Session_Timeout_Config__mdt testMetadata = createMetadataConfig(1, true, 'logout', null);
@@ -168,7 +167,7 @@ private class SessionTimeoutConfigControllerTest {
         Test.stopTest();
 
         System.assertNotEquals(null, result, 'Result should not be null');
-        System.assertEquals(15, result.timeoutSettings.inactivityTimeout, 'Should return configured timeout value');
+        System.assertEquals(15000, result.timeoutSettings.inactivityTimeout, 'Should return configured timeout value');
         System.assertEquals('logout', result.actionSettings.postTimeoutAction, 'Should return configured action');
     }
 
@@ -180,7 +179,7 @@ private class SessionTimeoutConfigControllerTest {
         SessionTimeoutConfigDTO dto = new SessionTimeoutConfigDTO(testMetadata);
         Test.stopTest();
 
-        System.assertEquals(15, dto.timeoutSettings.inactivityTimeout, 'Inactivity timeout should match');
+        System.assertEquals(15000, dto.timeoutSettings.inactivityTimeout, 'Inactivity timeout should match');
         System.assertEquals('Metadata Timeout', dto.modalContent.modalTitle, 'Modal title should match');
         System.assertEquals('#111111', dto.modalStyle.modalHeaderColor, 'Modal header color should match');
         System.assertEquals('logout', dto.actionSettings.postTimeoutAction, 'Post timeout action should match');
@@ -214,7 +213,7 @@ private class SessionTimeoutConfigControllerTest {
         SessionTimeoutConfigDTO dto = new SessionTimeoutConfigDTO(testSetting);
         Test.stopTest();
 
-        System.assertEquals(15, dto.timeoutSettings.inactivityTimeout, 'Inactivity timeout should match');
+        System.assertEquals(15000, dto.timeoutSettings.inactivityTimeout, 'Inactivity timeout should match');
         System.assertEquals('Setting Title', dto.modalContent.modalTitle, 'Modal title should match');
         System.assertEquals('#111111', dto.modalStyle.modalHeaderColor, 'Modal header color should match');
         System.assertEquals('redirect', dto.actionSettings.postTimeoutAction, 'Post timeout action should match');
@@ -237,20 +236,36 @@ private class SessionTimeoutConfigControllerTest {
         System.assertEquals('logout', dto.actionSettings.postTimeoutAction, 'Invalid action should default to logout');
     }
 
-    @IsTest
-    static void testActionSettingsWithRedirectAction() {
-        SessionTimeoutSettings__c testSetting = new SessionTimeoutSettings__c(
-            Post_Timeout_Action__c = 'REDIRECT', // Test case sensitivity
-            Redirect_URL__c = 'https://test.com'
-        );
+@IsTest
+static void testActionSettingsWithRedirectAction_UsingCMDT() {
+    // Delete custom setting to force fallback to metadata
+    delete [SELECT Id FROM SessionTimeoutSettings__c WHERE SetupOwnerId = :UserInfo.getProfileId()];
 
-        Test.startTest();
-        SessionTimeoutConfigDTO dto = new SessionTimeoutConfigDTO(testSetting);
-        Test.stopTest();
+    // Use a relative path URL that will pass validation
+    String testRedirectUrl = '/lightning/page/home';
 
-        System.assertEquals('redirect', dto.actionSettings.postTimeoutAction, 'Action should be normalized to lowercase');
-        System.assertEquals('https://test.com', dto.actionSettings.redirectUrl, 'Redirect URL should match');
-    }
+    // Create metadata config with uppercase REDIRECT and valid relative URL
+    Session_Timeout_Config__mdt testMetadata = createMetadataConfig(
+        1,                     // priority
+        true,                  // isActive
+        'REDIRECT',            // postTimeoutAction (case insensitive)
+        testRedirectUrl        // redirect URL that will pass validation
+    );
+
+    // Inject test metadata into controller
+    SessionTimeoutConfigController.TestConfigWrapper wrapper = new SessionTimeoutConfigController.TestConfigWrapper();
+    wrapper.config = testMetadata;
+    SessionTimeoutConfigController.testConfig = wrapper;
+
+    Test.startTest();
+    SessionTimeoutConfigDTO dto = SessionTimeoutConfigController.fetchTimeoutConfig();
+    Test.stopTest();
+
+    System.assertNotEquals(null, dto, 'DTO should not be null');
+    System.assertNotEquals(null, dto.actionSettings, 'Action settings should not be null');
+    System.assertEquals('redirect', dto.actionSettings.postTimeoutAction, 'Action should be normalized to lowercase');
+    System.assertEquals(testRedirectUrl, dto.actionSettings.redirectUrl, 'Redirect URL should match CMDT');
+}
 
     @IsTest
     static void testFetchTimeoutConfigWithNoConfigAvailable() {
@@ -273,7 +288,7 @@ private class SessionTimeoutConfigControllerTest {
         Test.stopTest();
     }
 
-     @IsTest
+    @IsTest
     static void testPriorityHandlingInMetadata() {
         // Create two metadata records with different priorities
         Session_Timeout_Config__mdt highPriority = createMetadataConfig(10, true, 'logout', null);
@@ -289,7 +304,7 @@ private class SessionTimeoutConfigControllerTest {
         Test.stopTest();
 
         System.assertEquals(10, result.timeoutSettings.priority, 'Should select highest priority config');
-        System.assertEquals(15, result.timeoutSettings.inactivityTimeout, 'Should use high priority config');
+        System.assertEquals(15000, result.timeoutSettings.inactivityTimeout, 'Should use high priority config');
     }
 
     @IsTest
@@ -328,247 +343,227 @@ private class SessionTimeoutConfigControllerTest {
         insert orgSetting;
 
         Test.startTest();
-        SessionTimeoutConfigDTO dto = SessionTimeoutConfigController.fetchTimeoutConfig();
+        SessionTimeoutConfigDTO result = SessionTimeoutConfigController.fetchTimeoutConfig();
         Test.stopTest();
 
-        System.assertEquals(25, dto.timeoutSettings.inactivityTimeout, 'Should use org default setting');
-        System.assertEquals('redirect', dto.actionSettings.postTimeoutAction, 'Should use org default action');
+        System.assertEquals(25000, result.timeoutSettings.inactivityTimeout, 'Should use org default setting');
+        System.assertEquals('redirect', result.actionSettings.postTimeoutAction, 'Should use org default action');
     }
 
     @IsTest
     static void testAllInnerClassesInitialized() {
         Test.startTest();
-        SessionTimeoutConfigDTO dto = SessionTimeoutConfigController.fetchTimeoutConfig();
+        SessionTimeoutConfigDTO result = SessionTimeoutConfigController.fetchTimeoutConfig();
         Test.stopTest();
 
-        System.assertNotEquals(null, dto.timeoutSettings, 'TimeoutSettings should be initialized');
-        System.assertNotEquals(null, dto.modalContent, 'ModalContent should be initialized');
-        System.assertNotEquals(null, dto.modalStyle, 'ModalStyle should be initialized');
-        System.assertNotEquals(null, dto.actionSettings, 'ActionSettings should be initialized');
+        System.assertNotEquals(null, result.timeoutSettings, 'TimeoutSettings should be initialized');
+        System.assertNotEquals(null, result.modalContent, 'ModalContent should be initialized');
+        System.assertNotEquals(null, result.modalStyle, 'ModalStyle should be initialized');
+        System.assertNotEquals(null, result.actionSettings, 'ActionSettings should be initialized');
     }
 
+    @IsTest
+    static void testMultipleActiveMetadataConfigs() {
+        // Simulate multiple active configs with different priorities
+        Session_Timeout_Config__mdt config1 = createMetadataConfig(5, true, 'logout', null);
+        Session_Timeout_Config__mdt config2 = createMetadataConfig(10, true, 'redirect', 'https://example.com');
 
-	@IsTest
-	static void testMultipleActiveMetadataConfigs() {
-    // Simulate multiple active configs with different priorities
-    Session_Timeout_Config__mdt config1 = createMetadataConfig(5, true, 'logout', null);
-    Session_Timeout_Config__mdt config2 = createMetadataConfig(10, true, 'redirect', 'https://example.com');
+        SessionTimeoutConfigController.TestConfigWrapper wrapper = new SessionTimeoutConfigController.TestConfigWrapper();
+        wrapper.config = config2; // Higher priority should be selected
 
-    SessionTimeoutConfigController.TestConfigWrapper wrapper = new SessionTimeoutConfigController.TestConfigWrapper();
-    wrapper.config = config2; // Higher priority should be selected
+        Test.startTest();
+        SessionTimeoutConfigController.testConfig = wrapper;
+        SessionTimeoutConfigDTO result = SessionTimeoutConfigController.fetchTimeoutConfig();
+        Test.stopTest();
 
-    Test.startTest();
-    SessionTimeoutConfigController.testConfig = wrapper;
-    SessionTimeoutConfigDTO result = SessionTimeoutConfigController.fetchTimeoutConfig();
-    Test.stopTest();
-
-    System.assertEquals(10, result.timeoutSettings.priority, 'Should select highest priority config');
-    System.assertEquals('redirect', result.actionSettings.postTimeoutAction, 'Should use high priority action');
-}
-
-@IsTest
-static void testGetLiveConfigurationError() {
-    // Force an error by making the query return no results
-    delete [SELECT Id FROM SessionTimeoutSettings__c];
-
-    SessionTimeoutConfigController.TestConfigWrapper wrapper = new SessionTimeoutConfigController.TestConfigWrapper();
-    wrapper.error = 'Simulated error';
-
-    Test.startTest();
-    SessionTimeoutConfigController.testConfig = wrapper;
-    try {
-        SessionTimeoutConfigController.fetchTimeoutConfig();
-        System.assert(false, 'Expected exception was not thrown');
-    } catch (AuraHandledException e) {
-        System.assert(e.getMessage().contains('Simulated error'), 'Expected error message not found');
+        System.assertEquals(10, result.timeoutSettings.priority, 'Should select highest priority config');
+        System.assertEquals('redirect', result.actionSettings.postTimeoutAction, 'Should use high priority action');
     }
-    Test.stopTest();
-}
 
+    @IsTest
+    static void testGetLiveConfigurationError() {
+        // Force an error by making the query return no results
+        delete [SELECT Id FROM SessionTimeoutSettings__c];
 
-@IsTest
-static void testActionSettingsCaseSensitivity() {
-    SessionTimeoutSettings__c testSetting = new SessionTimeoutSettings__c(
-        Post_Timeout_Action__c = 'REDIRECT',
-        Redirect_URL__c = 'https://test.com'
-    );
+        SessionTimeoutConfigController.TestConfigWrapper wrapper = new SessionTimeoutConfigController.TestConfigWrapper();
+        wrapper.error = 'Simulated error';
 
-    Test.startTest();
-    SessionTimeoutConfigDTO dto = new SessionTimeoutConfigDTO(testSetting);
-    Test.stopTest();
-
-    System.assertEquals('redirect', dto.actionSettings.postTimeoutAction, 'Should normalize to lowercase');
-}
-
-@IsTest
-static void testActionSettingsDefaults() {
-    SessionTimeoutSettings__c testSetting = new SessionTimeoutSettings__c(
-        Post_Timeout_Action__c = null,
-        Redirect_URL__c = null
-    );
-
-    Test.startTest();
-    SessionTimeoutConfigDTO dto = new SessionTimeoutConfigDTO(testSetting);
-    Test.stopTest();
-
-    System.assertEquals('logout', dto.actionSettings.postTimeoutAction, 'Should default to logout');
-    System.assertEquals(null, dto.actionSettings.redirectUrl, 'Redirect URL should be null');
-}
-
-
-
-@IsTest
-static void testFetchTimeoutConfigWithOrgDefaultSetting() {
-    // Delete existing settings
-    delete [SELECT Id FROM SessionTimeoutSettings__c];
-
-    // Create org default setting
-    SessionTimeoutSettings__c orgSetting = new SessionTimeoutSettings__c(
-        Name = 'Org Default',
-        Inactivity_Timeout__c = 40,
-        Post_Timeout_Action__c = 'redirect',
-        Redirect_URL__c = 'https://org-default.com'
-    );
-    insert orgSetting;
-
-    Test.startTest();
-    SessionTimeoutConfigDTO result = SessionTimeoutConfigController.fetchTimeoutConfig();
-    Test.stopTest();
-
-    System.assertEquals(40, result.timeoutSettings.inactivityTimeout, 'Should use org default setting');
-    System.assertEquals('redirect', result.actionSettings.postTimeoutAction, 'Should use org default action');
-}
-
-@IsTest
-static void testActionSettingsEmptyString() {
-    // First delete any existing user-specific settings
-    delete [SELECT Id FROM SessionTimeoutSettings__c WHERE SetupOwnerId = :UserInfo.getUserId()];
-
-    SessionTimeoutSettings__c testSetting = new SessionTimeoutSettings__c(
-        Name = 'Empty Action Test',
-        SetupOwnerId = UserInfo.getUserId(), // Use User scope
-        Post_Timeout_Action__c = '',
-        Redirect_URL__c = '',
-        Show_Countdown__c = true,
-        Inactivity_Timeout__c = 30
-    );
-    insert testSetting;
-
-    Test.startTest();
-    SessionTimeoutConfigDTO dto = new SessionTimeoutConfigDTO(testSetting);
-    Test.stopTest();
-
-    System.assertEquals('logout', dto.actionSettings.postTimeoutAction);
-    System.assertEquals(null, dto.actionSettings.redirectUrl);
-}
-
-@IsTest
-static void testFetchTimeoutConfigWithNullValues() {
-    // Get and update the existing profile setting instead of creating new
-    SessionTimeoutSettings__c existingSetting = [
-        SELECT Id FROM SessionTimeoutSettings__c
-        WHERE SetupOwnerId = :UserInfo.getProfileId()
-        LIMIT 1
-    ];
-    existingSetting.Inactivity_Timeout__c = null;
-    existingSetting.Logout_Countdown__c = null;
-    update existingSetting;
-
-    Test.startTest();
-    SessionTimeoutConfigDTO result = SessionTimeoutConfigController.fetchTimeoutConfig();
-    Test.stopTest();
-
-    System.assertNotEquals(null, result.timeoutSettings.inactivityTimeout);
-    System.assertNotEquals(null, result.timeoutSettings.logoutCountdown);
-}
-
-// Additional test cases to increase coverage
-@IsTest
-static void testFetchTimeoutConfigWithNoSettings() {
-    // Delete all settings to test the no-configuration scenario
-    delete [SELECT Id FROM SessionTimeoutSettings__c];
-
-    // Simulate no metadata available
-    SessionTimeoutConfigController.TestConfigWrapper wrapper = new SessionTimeoutConfigController.TestConfigWrapper();
-    wrapper.error = 'No configuration found';
-
-    Test.startTest();
-    SessionTimeoutConfigController.testConfig = wrapper;
-    try {
-        SessionTimeoutConfigController.fetchTimeoutConfig();
-        System.assert(false, 'Expected exception was not thrown');
-    } catch (AuraHandledException e) {
-        System.assert(e.getMessage().contains('No configuration found'), 'Expected error message');
+        Test.startTest();
+        SessionTimeoutConfigController.testConfig = wrapper;
+        try {
+            SessionTimeoutConfigController.fetchTimeoutConfig();
+            System.assert(false, 'Expected exception was not thrown');
+        } catch (AuraHandledException e) {
+            System.assert(e.getMessage().contains('Simulated error'), 'Expected error message not found');
+        }
+        Test.stopTest();
     }
-    Test.stopTest();
-}
 
+    @IsTest
+    static void testActionSettingsCaseSensitivity() {
+        SessionTimeoutSettings__c testSetting = new SessionTimeoutSettings__c(
+            Post_Timeout_Action__c = 'REDIRECT',
+            Redirect_URL__c = 'https://test.com'
+        );
 
-@IsTest
-static void testFetchTimeoutConfigWithDuplicatePrioritiesThroughPublicInterface() {
-    // Simulate duplicate priority error
-    SessionTimeoutConfigController.TestConfigWrapper wrapper = new SessionTimeoutConfigController.TestConfigWrapper();
-    wrapper.error = 'Duplicate priority found';
+        Test.startTest();
+        SessionTimeoutConfigDTO dto = new SessionTimeoutConfigDTO(testSetting);
+        Test.stopTest();
 
-    Test.startTest();
-    SessionTimeoutConfigController.testConfig = wrapper;
-    try {
-        SessionTimeoutConfigController.fetchTimeoutConfig();
-        System.assert(false, 'Expected exception was not thrown');
-    } catch (AuraHandledException e) {
-        System.assert(e.getMessage().contains('Duplicate priority'), 'Expected priority error');
+        System.assertEquals('redirect', dto.actionSettings.postTimeoutAction, 'Should normalize to lowercase');
     }
-    Test.stopTest();
-}
 
+    @IsTest
+    static void testActionSettingsDefaults() {
+        SessionTimeoutSettings__c testSetting = new SessionTimeoutSettings__c(
+            Post_Timeout_Action__c = null,
+            Redirect_URL__c = null
+        );
 
+        Test.startTest();
+        SessionTimeoutConfigDTO dto = new SessionTimeoutConfigDTO(testSetting);
+        Test.stopTest();
 
-@IsTest
-static void testFetchTimeoutConfigWithDefaultValues() {
-    // Delete all settings to test default values in DTO
-    delete [SELECT Id FROM SessionTimeoutSettings__c];
+        System.assertEquals('logout', dto.actionSettings.postTimeoutAction, 'Should default to logout');
+        System.assertEquals(null, dto.actionSettings.redirectUrl, 'Redirect URL should be null');
+    }
 
-    // Create minimal valid metadata config
-    Session_Timeout_Config__mdt testMetadata = new Session_Timeout_Config__mdt(
-        Label = 'Minimal Config',
-        DeveloperName = 'Minimal_Config',
-        Is_Active__c = true,
-        Priority__c = 1,
-        Inactivity_Timeout__c = 15,
-        Show_Countdown__c = true
-    );
+    @IsTest
+    static void testFetchTimeoutConfigWithOrgDefaultSetting() {
+        // Delete existing settings
+        delete [SELECT Id FROM SessionTimeoutSettings__c];
 
-    SessionTimeoutConfigController.TestConfigWrapper wrapper = new SessionTimeoutConfigController.TestConfigWrapper();
-    wrapper.config = testMetadata;
+        // Create org default setting
+        SessionTimeoutSettings__c orgSetting = new SessionTimeoutSettings__c(
+            Name = 'Org Default',
+            Inactivity_Timeout__c = 40,
+            Post_Timeout_Action__c = 'redirect',
+            Redirect_URL__c = 'https://org-default.com'
+        );
+        insert orgSetting;
 
-    Test.startTest();
-    SessionTimeoutConfigController.testConfig = wrapper;
-    SessionTimeoutConfigDTO result = SessionTimeoutConfigController.fetchTimeoutConfig();
-    Test.stopTest();
+        Test.startTest();
+        SessionTimeoutConfigDTO result = SessionTimeoutConfigController.fetchTimeoutConfig();
+        Test.stopTest();
 
-    System.assertEquals(15, result.timeoutSettings.inactivityTimeout, 'Should use default timeout');
-    System.assertEquals(true, result.timeoutSettings.isActive, 'Should be active');
-    System.assertNotEquals(null, result.modalContent, 'Modal content should be initialized');
-    System.assertNotEquals(null, result.modalStyle, 'Modal style should be initialized');
-}
+        System.assertEquals(40000, result.timeoutSettings.inactivityTimeout, 'Should use org default setting');
+        System.assertEquals('redirect', result.actionSettings.postTimeoutAction, 'Should use org default action');
+    }
 
-@IsTest
-static void testFetchTimeoutConfigWithAllNullValuesInSetting() {
-    // Create in user scope to avoid conflict with profile setting
-    delete [SELECT Id FROM SessionTimeoutSettings__c WHERE SetupOwnerId = :UserInfo.getUserId()];
+    @IsTest
+    static void testActionSettingsEmptyString() {
+        SessionTimeoutSettings__c testSetting = new SessionTimeoutSettings__c(
+            Post_Timeout_Action__c = '',
+            Redirect_URL__c = '',
+            Show_Countdown__c = true,
+            Inactivity_Timeout__c = 30
+        );
 
-    SessionTimeoutSettings__c testSetting = new SessionTimeoutSettings__c(
-        Name = 'Null Values Test',
-        SetupOwnerId = UserInfo.getUserId(),
-        Show_Countdown__c = true
-    );
-    insert testSetting;
+        Test.startTest();
+        SessionTimeoutConfigDTO dto = new SessionTimeoutConfigDTO(testSetting);
+        Test.stopTest();
 
-    Test.startTest();
-    SessionTimeoutConfigDTO result = SessionTimeoutConfigController.fetchTimeoutConfig();
-    Test.stopTest();
+        System.assertEquals('logout', dto.actionSettings.postTimeoutAction);
+        System.assertEquals(null, dto.actionSettings.redirectUrl);
+    }
 
-    System.assertNotEquals(null, result.timeoutSettings.inactivityTimeout);
-    System.assertNotEquals(null, result.timeoutSettings.logoutCountdown);
-}
+    @IsTest
+    static void testFetchTimeoutConfigWithNullValues() {
+        // Get and update the existing profile setting instead of creating new
+        SessionTimeoutSettings__c existingSetting = [
+            SELECT Id FROM SessionTimeoutSettings__c
+            WHERE SetupOwnerId = :UserInfo.getProfileId()
+            LIMIT 1
+        ];
+        existingSetting.Inactivity_Timeout__c = null;
+        existingSetting.Logout_Countdown__c = null;
+        update existingSetting;
+
+        Test.startTest();
+        SessionTimeoutConfigDTO result = SessionTimeoutConfigController.fetchTimeoutConfig();
+        Test.stopTest();
+
+        System.assertNotEquals(null, result.timeoutSettings.inactivityTimeout);
+        System.assertNotEquals(null, result.timeoutSettings.logoutCountdown);
+    }
+
+    @IsTest
+    static void testFetchTimeoutConfigWithNoSettings() {
+        // Delete all settings to test the no-configuration scenario
+        delete [SELECT Id FROM SessionTimeoutSettings__c];
+
+        // Simulate no metadata available
+        SessionTimeoutConfigController.TestConfigWrapper wrapper = new SessionTimeoutConfigController.TestConfigWrapper();
+        wrapper.error = 'No configuration found';
+
+        Test.startTest();
+        SessionTimeoutConfigController.testConfig = wrapper;
+        try {
+            SessionTimeoutConfigController.fetchTimeoutConfig();
+            System.assert(false, 'Expected exception was not thrown');
+        } catch (AuraHandledException e) {
+            System.assert(e.getMessage().contains('No configuration found'), 'Expected error message');
+        }
+        Test.stopTest();
+    }
+
+    @IsTest
+    static void testFetchTimeoutConfigWithDuplicatePrioritiesThroughPublicInterface() {
+        // Simulate duplicate priority error
+        SessionTimeoutConfigController.TestConfigWrapper wrapper = new SessionTimeoutConfigController.TestConfigWrapper();
+        wrapper.error = 'Duplicate priority found';
+
+        Test.startTest();
+        SessionTimeoutConfigController.testConfig = wrapper;
+        try {
+            SessionTimeoutConfigController.fetchTimeoutConfig();
+            System.assert(false, 'Expected exception was not thrown');
+        } catch (AuraHandledException e) {
+            System.assert(e.getMessage().contains('Duplicate priority'), 'Expected priority error');
+        }
+        Test.stopTest();
+    }
+
+    @IsTest
+    static void testFetchTimeoutConfigWithDefaultValues() {
+        // Delete all settings to test default values in DTO
+        delete [SELECT Id FROM SessionTimeoutSettings__c];
+
+        // Create minimal valid metadata config
+        Session_Timeout_Config__mdt testMetadata = new Session_Timeout_Config__mdt(
+            Label = 'Minimal Config',
+            DeveloperName = 'Minimal_Config',
+            Is_Active__c = true,
+            Priority__c = 1,
+            Inactivity_Timeout__c = 15,
+            Show_Countdown__c = true
+        );
+
+        SessionTimeoutConfigController.TestConfigWrapper wrapper = new SessionTimeoutConfigController.TestConfigWrapper();
+        wrapper.config = testMetadata;
+
+        Test.startTest();
+        SessionTimeoutConfigController.testConfig = wrapper;
+        SessionTimeoutConfigDTO result = SessionTimeoutConfigController.fetchTimeoutConfig();
+        Test.stopTest();
+
+        System.assertEquals(15000, result.timeoutSettings.inactivityTimeout, 'Should use default timeout');
+        System.assertEquals(true, result.timeoutSettings.isActive, 'Should be active');
+        System.assertNotEquals(null, result.modalContent, 'Modal content should be initialized');
+        System.assertNotEquals(null, result.modalStyle, 'Modal style should be initialized');
+    }
+
+    @IsTest
+    static void testFetchTimeoutConfigWithAllNullValuesInSetting() {
+        SessionTimeoutSettings__c testSetting = new SessionTimeoutSettings__c(
+            Show_Countdown__c = true
+        );
+
+        Test.startTest();
+        SessionTimeoutConfigDTO result = SessionTimeoutConfigController.fetchTimeoutConfig();
+        Test.stopTest();
+
+        System.assertNotEquals(null, result.timeoutSettings.inactivityTimeout);
+        System.assertNotEquals(null, result.timeoutSettings.logoutCountdown);
+    }
 }

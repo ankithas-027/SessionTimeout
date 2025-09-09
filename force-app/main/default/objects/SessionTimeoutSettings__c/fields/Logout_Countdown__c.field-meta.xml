@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Logout_Countdown__c</fullName>
-    <defaultValue>15000</defaultValue>
+    <defaultValue>15</defaultValue>
+    <description>Time until auto-logout after inactivity (in seconds).</description>
     <externalId>false</externalId>
+    <inlineHelpText>Set the number of seconds between showing the modal and automatic logout.</inlineHelpText>
     <label>Logout Countdown</label>
     <precision>18</precision>
     <required>false</required>
